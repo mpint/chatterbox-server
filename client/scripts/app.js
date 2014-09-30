@@ -1,5 +1,5 @@
 // YOUR CODE HERE:
-
+var URL = '127.0.0.1:3000/classes/messages'
 var app = {
   init: function() {
     // Creates event listeners when new users and rooms get added to the chatterbox client
@@ -16,7 +16,7 @@ var app = {
   send: function(message) {
     // Send a message to the parse server in the form of {object}
     $.ajax({
-      url: "https://api.parse.com/1/classes/chatterbox",
+      url: "127.0.0.1:3000/",
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',

@@ -17,7 +17,14 @@ exports.handleRequest = function(request, response) {
 
   if (request.method === 'GET') { // requests all messages
     if (request.url === '/classes/messages') {
-      console.log("404?");
+      var statusCode = 200;
+      var headers = defaultCorsHeaders;
+      headers['Content-Type'] = "application/json";
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({results:data}));
+    }
+    if (request.url === '/classes/room1') {
+      console.log('IN HERE')
       var statusCode = 200;
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = "application/json";
@@ -36,6 +43,27 @@ exports.handleRequest = function(request, response) {
     if (request.url === '/classes/messages') {
       var statusCode = 201;
       var body = '';
+
+      request.on('data', function (chunk) {
+        body += chunk;
+      });
+
+      request.on('end', function() {
+        var parsed = JSON.parse(body);
+        data.unshift(parsed);
+      });
+
+        var headers = defaultCorsHeaders;
+        headers['Content-Type'] = "application/json";
+        console.log(statusCode);
+        response.writeHead(statusCode, headers);
+        response.end();
+    }
+
+
+    if (request.url === '/classes/room1') {
+      var statusCode = 201;
+      var body = '';
       response.writeHead(statusCode, headers);
       request.on('data', function (chunk) {
         body += chunk;
@@ -50,7 +78,7 @@ exports.handleRequest = function(request, response) {
         response.writeHead(statusCode, headers);
         response.end(JSON.stringify({results: data}));
       });
-  } else {
+    } else {
       var statusCode = 404;
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = "text/plain";
