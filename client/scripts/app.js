@@ -1,6 +1,11 @@
 // YOUR CODE HERE:
-var URL = '127.0.0.1:3000/classes/messages'
 var app = {
+  server: "http://127.0.0.1:3000/classes/messages",
+  currentRoom: "lobby",
+  roomList: [],
+  username: null,
+  friendsList: [],
+
   init: function() {
     // Creates event listeners when new users and rooms get added to the chatterbox client
     $('.username').on('click', function(e){
@@ -16,7 +21,7 @@ var app = {
   send: function(message) {
     // Send a message to the parse server in the form of {object}
     $.ajax({
-      url: "127.0.0.1:3000/",
+      url: "http://127.0.0.1:3000/classes/messages",
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -33,9 +38,9 @@ var app = {
     // Fetches new messages from the parse server
     $.ajax({
       type: 'GET',
-      data: {order: "-createdAt"},
-      contentType: "application/jsonp",
-      url: "https://api.parse.com/1/classes/chatterbox",
+      // data: {order: "-createdAt"},
+      contentType: "application/json",
+      url: "http://127.0.0.1:3000/classes/messages",
       success: function(data){
         app.clearMessages();
         app.displayMessages(data);
@@ -55,16 +60,18 @@ var app = {
   },
 
   addMessage: function(message) {
+    if  (message){
     // adds a message to the existing message list and sends it to the server
-    message.text.replace(/<script>|<\/script>/g, '');
-    if(app.currentRoom === message.roomname) {
-      if(app.username === message.username){
-        $("#chats").prepend("<li class='message user'><span class='username'>" + message.username + "</span>: " + message.text+"</li>");
-      } else{
-        if (app.friendsList.indexOf(message.username) > -1) {
-          $("#chats").prepend("<li class='message friendly'><span class='username'>" + message.username + "</span>: <strong>" + message.text+"</strong></li>");
-        } else {
-          $("#chats").prepend("<li class='message'><span class='username'>" + message.username + "</span>: " + message.text+"</li>");
+      message.text.replace(/<script>|<\/script>/g, '');
+      if(app.currentRoom === message.roomname) {
+        if(app.username === message.username){
+          $("#chats").prepend("<li class='message user'><span class='username'>" + message.username + "</span>: " + message.text+"</li>");
+        } else{
+          if (app.friendsList.indexOf(message.username) > -1) {
+            $("#chats").prepend("<li class='message friendly'><span class='username'>" + message.username + "</span>: <strong>" + message.text+"</strong></li>");
+          } else {
+            $("#chats").prepend("<li class='message'><span class='username'>" + message.username + "</span>: " + message.text+"</li>");
+          }
         }
       }
     }
@@ -90,10 +97,12 @@ var app = {
   },
 
   newRoom: function(message) {
-    // adds the message room to the room list if it doesn't already exist
-    if(app.roomList.indexOf(message.roomname) === -1 && message.roomname !== undefined
-       && app.currentRoom !== message.roomname ) {
-      app.roomList.push(message.roomname);
+    if (message) {
+      // adds the message room to the room list if it doesn't already exist
+      if(app.roomList.indexOf(message.roomname) === -1 && message.roomname !== undefined
+         && app.currentRoom !== message.roomname ) {
+        app.roomList.push(message.roomname);
+      }
     }
   },
 
@@ -128,18 +137,13 @@ var app = {
     };
     app.send(message);
     $('#message').val('');
-  },
-  server: "https://api.parse.com/1/classes/chatterbox",
-  currentRoom: "lobby",
-  roomList: [],
-  username: null,
-  friendsList: []
+  }
 };
 
-app.fetch();
-setInterval(app.fetch, 100);
 
 $(document).ready( function() {
+  setInterval(app.fetch, 2000);
+  app.fetch();
   $('input:submit').on('click', function() {
     app.handleSubmit();
   });

@@ -15,16 +15,16 @@ exports.handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  if (request.method === 'GET') { // requests all messages
+  if (request.method === 'GET' || request.method === 'OPTIONS') { // requests all messages
     if (request.url === '/classes/messages') {
       var statusCode = 200;
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = "application/json";
       response.writeHead(statusCode, headers);
+      console.log('get 200');
       response.end(JSON.stringify({results:data}));
     }
     if (request.url === '/classes/room1') {
-      console.log('IN HERE')
       var statusCode = 200;
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = "application/json";
@@ -35,6 +35,7 @@ exports.handleRequest = function(request, response) {
       var headers = defaultCorsHeaders;
       headers['Content-Type'] = "text/plain";
       response.writeHead(statusCode, headers);
+      console.log('get 404');
       response.end("404 Not Found");
     }
   }
@@ -76,7 +77,7 @@ exports.handleRequest = function(request, response) {
         var headers = defaultCorsHeaders;
         headers['Content-Type'] = "application/json";
         response.writeHead(statusCode, headers);
-        response.end(JSON.stringify({results: data}));
+        response.end();
       });
     } else {
       var statusCode = 404;
